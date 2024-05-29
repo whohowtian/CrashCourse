@@ -1,0 +1,254 @@
+
+<!--
+    Template: Ecommerce by Bootstrapious (https://bootstrapious.com/p/boutique-bootstrap-e-commerce-template)
+    Bootstrap: Bootstrap 5 (https://getbootstrap.com/)
+    Car Animation: Animation by Rickard Elimää (https://stackoverflow.com/questions/69234745/car-animation-from-left-to-right-and-then-hide-car-image)
+    Font: Font Awesome by Font Awesome (https://fontawesome.com/)
+    Font2: Google Fonts by Google (https://fonts.google.com/knowledge)
+    Histogram slider: Vue3 Histogram Slider by phedone (https://github.com/phedone/vue3-histogram-slider)
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Crash Course | Instructors List</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <script src="/static/js/vue.global.min.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue3-histogram-slider@0.4.16/dist/histogram-slider.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue3-histogram-slider@0.4.16/dist/histogram-slider.css">
+
+    <!-- Google fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&amp;display=swap">
+    <!-- theme stylesheet-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <link rel="stylesheet" href="/static/css/car.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="/static/img/favicon.png">
+  </head>
+  <body>
+    <div class="page-holder" id="instructor_list">
+      <!-- navbar-->
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0"><a class="navbar-brand" href=""><span class="fw-bold text-uppercase text-dark">Crash Course</span>
+            <img src="../static/img/favicon.png" class="img-fluid"></a>
+            <button class="navbar-toggler navbar-toggler-end" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="/home">Home</a>
+                </li> 
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link active" href="list">Instructors</a>
+                </li>
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="lesson">Lessons</a>
+                </li>
+                
+                <div class="car-movement col-12 d-none d-lg-block">
+                  <div class="car">🚗</div>
+                </div>
+                
+              </ul>
+              <ul class="navbar-nav ms-auto">               
+                <li class="nav-item"><a class="nav-link" href="cart"> <i class="fas fa-dolly-flatbed me-1 text-gray"></i>Cart<small :style="setColor" class="fw-normal">([[cart.length]])</small></a></li> 
+                <li class="nav-item"><a class="nav-link" href="logout" @click="log_out"> <i class="fas fa-user me-1 text-gray fw-normal"></i>Log Out</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <div class="container">
+
+        <!--- modal for test-->
+        <div class="modal" id="myModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Enable website to use your location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <img class="w-100" src="../static/img/user_guide.jpg">
+              </div>
+              <div class="modal-footer">
+      
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+
+        <!-- HERO SECTION-->
+        <section class="py-4 bg-light">
+          <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-2 align-items-center">
+              <div class="col-lg-6">
+                <h1 class="h2 text-uppercase mb-0">Instructors</h1>
+              </div>
+              <div class="col-lg-6 text-lg-end">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb justify-content-lg-end mb-0 px-0 bg-light">
+                    <li class="breadcrumb-item"><a class="text-dark" href="/home">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Instructors</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="py-5">
+          <div class="container-fluid p-0">
+            <div class="row">
+              <!-- SHOP SIDEBAR-->
+
+              <div class="col-lg-3 order-1">
+                <button class="btn btn-primary d-lg-none btn col-12 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapsefilter" aria-expanded="false" aria-controls="collapsefilter">
+                  Click me to filter
+                </button>
+                <div class="collapse d-lg-block"  id="collapsefilter">
+                  
+                  <div class="mb-4">
+                    <h6 class="text-uppercase mb-3">Search instructor's name</h6>
+                    
+                    <input class="form-control" id="search_name" type="text" placeholder="Instructor's name" v-model="filter_options.instructor_name">
+                  </div>
+
+                  <div class="mb-3">
+                    <h6 class="text-uppercase mb-3">Filter by Distance</h6>
+                    
+                    <button type="button" v-if="!Geolocation_request" class="btn btn-primary" @click="findCurrLoc">Use my Location</button>
+                    <!-- <button type="button" v-else class="btn btn-primary" onclick="alert('test')">another</button> -->
+                  </div>
+                  <div v-if="location">
+                      <input type="range" class="form-control-range w-100" id="formControlRange" min="0" max="50" v-model="filter_options.filterKm">
+                      <p>[[filter_options.filterKm]] KM</p>
+              
+                  </div>
+
+                  
+
+                  <h6 class="text-uppercase">Price range</h6>
+                  <div class="container pt-4 mb-3">
+
+                    <histogram-slider v-if="price_data.length > 0"
+                      width="100"
+                      :bar-height="100"
+                      :data="price_data"
+                      :prettify="prettify"
+                      :drag-interval="true"
+                      :force-edges="false"
+                      :colors="['#4facfe', '#00f2fe']"
+                      :min="min"
+                      :max="max"
+                      @update="update"
+                      @finish="finish"
+                      :resettable="true"
+                    ></histogram-slider>
+
+                  </div>
+                  
+                  <!-- <button class="btn btn-primary mb-4" @click="filter_options.price_from = 0"> Reset Price Range</button> -->
+
+              
+                  
+                  <h6 class="text-uppercase mb-3">Language</h6>
+                  
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="checkbox" id="checkbox_1" value="English" v-model="filter_options.languages">
+                    <label class="form-check-label" for="checkbox_1">English</label>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="checkbox" id="checkbox_2" value="Chinese" v-model="filter_options.languages" >
+                    <label class="form-check-label" for="checkbox_2">Chinese</label>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="checkbox" id="checkbox_3" value="Malay" v-model="filter_options.languages" >
+                    <label class="form-check-label" for="checkbox_3">Malay</label>
+                  </div>
+                  <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="checkbox_4" value="Tamil" v-model="filter_options.languages" >
+                    <label class="form-check-label" for="checkbox_4">Tamil</label>
+                  </div>
+                  
+                  <h6 class="text-uppercase mb-3">Instructor's Gender</h6>
+                  
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="customRadio" id="radio_1" value=""  v-model="filter_options.gender" checked>
+                    <label class="form-check-label" for="radio_1">Any</label>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="customRadio" id="radio_2" value="Male"  v-model="filter_options.gender" >
+                    <label class="form-check-label" for="radio_2">Male</label>
+                  </div>
+                  <div class="form-check mb-4">
+                    <input class="form-check-input" type="radio" name="customRadio" id="radio_3" value="Female"  v-model="filter_options.gender">
+                    <label class="form-check-label" for="radio_3">Female</label>
+                  </div>
+
+                  <h6 class="text-uppercase mb-3">Class Type</h6>
+                  
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="checkbox" id="checkbox_1" value="3" v-model="filter_options.classes">
+                    <label class="form-check-label" for="checkbox_1">Class 3</label>
+                  </div>
+                  <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="checkbox_2" value="3A" v-model="filter_options.classes" >
+                    <label class="form-check-label" for="checkbox_2">Class 3A</label>
+                  </div>
+                </div>
+              </div>
+              <!-- SHOP LISTING-->
+              <div class="col-lg-9 order-2 mb-5 mb-lg-0">
+                <div class="row mb-3 align-items-center">
+                  <div class="col-lg-6 mb-2 mb-lg-0">
+                
+                  </div>
+                 
+                </div>
+                <div class="row">
+                  <!-- Instructors-->
+                  <div class="col-lg-4 col-sm-6" v-for="instructor of filterInstructors">
+                    <div class="product text-center">
+                      <div class="mb-3 position-relative mh-100">
+                        <a class="d-block" :href="'instructor/'+instructor.instructor_id">
+                          <img class="rounded img-fluid w-100" :src="instructor.img_url[0]" alt="">
+                        </a>
+                        <div class="product-overlay">
+                          <ul class="mb-0 list-inline">
+                            
+                            <li class="list-inline-item m-0 p-0"><a class="btn btn-sm btn-dark" :href="'instructor/'+instructor.instructor_id">Click me for more details</a></li>
+                           
+                          </ul>
+                        </div>
+                      </div>
+                      <h6> <a class="reset-anchor" :href="'instructor/'+instructor.instructor_id">[[instructor.name]]</a></h6>
+                    </div>
+                  </div>
+                </div>
+               
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+          <!-- JavaScript files-->
+      <script src="/static/js/list.js"></script>
+      <!-- <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+      <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<!--
+    Template: Ecommerce by Bootstrapious (https://bootstrapious.com/p/boutique-bootstrap-e-commerce-template)
+    Bootstrap: Bootstrap 5 (https://getbootstrap.com/)
+    Car Animation: Animation by Rickard Elimää (https://stackoverflow.com/questions/69234745/car-animation-from-left-to-right-and-then-hide-car-image)
+    Font: Font Awesome by Font Awesome (https://fontawesome.com/)
+    Font2: Google Fonts by Google (https://fonts.google.com/knowledge)
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Crash Course | Profile</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+
+    <script src="/static/js/vue.global.min.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <!-- Google fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&amp;display=swap">
+    <!-- theme stylesheet-->
+    <!-- <link rel="stylesheet" href="static/css/style.default.css" id="theme-stylesheet"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="/static/img/favicon.png">
+  </head>
+  <body>
+      <div id="editProfile">
+      
+        <header class="header bg-white">
+          <div class="container px-lg-3">
+            <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0"><a class="navbar-brand" href="/"><span class="fw-bold text-uppercase text-dark">Crash Course</span>
+              <img src="../static/img/favicon.png" class="img-fluid"></a>
+              <button class="navbar-toggler navbar-toggler-end" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                  <li class="nav-item">
+                    <!-- Link--><a class="nav-link active" href="/home">Home</a>
+                  </li>  
+                  <li class="nav-item">
+                    <!-- Link--><a class="nav-link" href="list">Instructors</a>
+                  </li>
+                  <li class="nav-item">
+                    <!-- Link--><a class="nav-link" href="lesson">Lessons</a>
+                  </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">               
+                  <li class="nav-item"><a class="nav-link" href="cart"> <i class="fas fa-dolly-flatbed me-1 text-gray"></i>Cart<small :style="setColor" class="fw-normal">([[cart.length]])</small></a></li> 
+                  <li class="nav-item"><a class="nav-link" href="logout" @click="log_out"> <i class="fas fa-user me-1 text-gray fw-normal"></i>Log Out</a></li>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </header>
+        
+        <div class="container bootstrap snippets bootdey">
+          <section class="py-4 bg-light">
+            <div class="container">
+              <div class="row px-4 px-lg-5 py-lg-2 align-items-center">
+                <div class="col-lg-6">
+                  <h1 class="h2 text-uppercase mb-0">Profile</h1>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-lg-end mb-0 px-0 bg-light">
+                      <li class="breadcrumb-item"><a class="text-dark" href="/home">Home</a></li>
+                      <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </section>
+            <hr>
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3">
+              <div class="text-center">
+                <img :src="profile_img" id="display_image" class="avatar img-circle img-thumbnail mb-3" alt="avatar">
+                
+                <h6 class="mb-3">Upload a different photo...</h6>
+                <input type="file" id="image_input" name="file" class="form-control mb-3" accept="image/png, image/jpg" @change="onFileChange">
+
+                <div v-show="image_alert == true" class="alert alert-danger alert-dismissible fade show p-1" role="alert">                 
+                  <p class="m-0">[[image_text]]</p>          
+                </div>
+              </div>
+            </div>
+            
+            <!-- edit form column -->
+            <div class="col-md-9 personal-info">
+              <div v-show="profile_alert == true" class="alert alert-success alert-dismissible fade show col-lg-4" role="alert">
+                    
+                <div>
+                 Saved successfully
+                </div>
+                
+              </div>
+              <h3 class="mb-4">Edit Profile</h3>
+              
+              <form class="form-horizontal" role="form" @submit.prevent="updateProfile">
+                <div class="form-group mb-4">
+                  
+                  <div class="col-lg-8">
+                    <label class="col-lg-3 control-label">Username:</label>
+                    <input class="form-control" type="text" v-model="username" disabled>
+                  </div>
+                </div>
+                <div class="form-group mb-4">
+                  
+                  <div class="col-lg-8">
+                    <label class="col-lg-3 control-label">Full Name:</label>
+                    <input class="form-control" type="text" v-model="fullname" placeholder="Full Name" required>
+                  </div>
+                </div>
+                <div class="form-group mb-4">
+                  
+                  <div class="col-lg-8">
+                    <label class="col-lg-3 control-label">Email:</label>
+                    <input class="form-control" type="email" v-model="email" placeholder="name@example.com" required>
+                  </div>
+                </div>
+                
+                <button class="mb-2 btn rounded-3 btn-primary" type="submit" @click="updateProfile()">Save changes</button>
+                
+              </form>
+
+              <hr>
+              <h3 class="mb-4"> Change password </h3>
+             
+              <form @submit.prevent="passValidation">
+                <div v-show="password_alert == true" class="alert alert-success alert-dismissible fade show col-lg-4" role="alert">
+              
+                  Saved successfully
+                                   
+               </div>
+                <div class="form-group col-lg-4">
+                  <div class="form-floating mb-3">
+                    <input type="password" class="form-control rounded-3" id="signUpPassword" minlength="8" v-model="password" placeholder="Password" @change="signupValidation()" required autocomplete="off">
+                    <label for="signUpPassword">Password</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="password" class="form-control rounded-3" id="confirmPassword" minlength="8" v-model="confirm_password" @change="signupValidation()" placeholder="Confirm Password" required autocomplete="off">
+                    <label for="confirmPassword">Confirm Password</label>
+                  </div>
+
+                  <div v-show="password_match == 0" class="alert alert-danger alert-dismissible fade show col-lg-4" role="alert">
+                    
+                    <div>
+                     Password doesn't match
+                    </div>
+                    
+                  </div>
+
+                  <button class="mb-2 btn rounded-3 btn-primary" type="submit" @click="passValidation()">Change Password</button>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  
+
+      <!-- <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <script src="/static/js/edit.js"></script>
+    
+
+    <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  </body>
+</html>

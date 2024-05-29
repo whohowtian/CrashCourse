@@ -1,0 +1,190 @@
+<!--
+    Template: Ecommerce by Bootstrapious (https://bootstrapious.com/p/boutique-bootstrap-e-commerce-template)
+    Bootstrap: Bootstrap 5 (https://getbootstrap.com/)
+    Car Animation: Animation by Rickard Elimää (https://stackoverflow.com/questions/69234745/car-animation-from-left-to-right-and-then-hide-car-image)
+    Font: Font Awesome by Font Awesome (https://fontawesome.com/)
+    Font2: Google Fonts by Google (https://fonts.google.com/knowledge)
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Crash Course | Cart</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+
+    <script src="/static/js/vue.global.min.js"></script>
+    <script src="/static/js/axios.js"></script>
+
+    <!-- Google fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&amp;display=swap">
+    <!-- theme stylesheet-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="static/css/custom.css">
+    <link rel="stylesheet" href="/static/css/car.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="static/img/favicon.png">
+
+  </head>
+  <body>
+    <div class="page-holder" id="cart">
+      <!-- navbar-->
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0"><a class="navbar-brand" href="/"><span class="fw-bold text-uppercase text-dark">Crash Course</span>
+            <img src="../static/img/favicon.png" class="img-fluid"></a>
+            <button class="navbar-toggler navbar-toggler-end" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="/home">Home</a>
+                </li>  
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="list">Instructors</a>
+                </li>
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="/lesson">Lessons</a>
+                </li>
+                
+                <div class="car-movement col-12 d-none d-lg-block">
+                  <div class="car">🚓</div>
+                </div>
+                
+                
+              </ul>
+              <ul class="navbar-nav ms-auto">               
+                <li class="nav-item"><a class="nav-link" href="/cart"> <i class="fas fa-dolly-flatbed me-1 text-gray"></i>Cart<small :style="setColor" class="fw-normal">([[cart.length]])</small></a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout" @click="log_out"> <i class="fas fa-user me-1 text-gray fw-normal"></i>Log out</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <div class="modal fade" id="confirm-dialog" tabindex="-1" data-bs-keyboard="false" aria-labelledby="confirmLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm deletion</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to remove Instructor [[ modal_data.instructor_name ]]'s lesson on [[modal_data.date]] at [[modal_data.time]]? </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="remove_from_cart(modal_index)">Yes, I want to remove this from cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <!-- HERO SECTION-->
+        <section class="py-4 bg-light">
+          <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-2 align-items-center">
+              <div class="col-lg-6">
+                <h1 class="h2 text-uppercase mb-0">Cart</h1>
+              </div>
+              <div class="col-lg-6 text-lg-end">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb justify-content-lg-end mb-0 px-0 bg-light">
+                    <li class="breadcrumb-item"><a class="text-dark" href="/home">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="py-5">
+          <h2 class="h5 text-uppercase mb-4">Lessons in cart</h2>
+          <div class="row">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+              <!-- CART TABLE-->
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class="bg-light">
+                    <!-- Headers -->
+                    <tr>
+                      
+                      <th class="border-0 p-3 text-center" scope="col"> <strong class="text-sm text-uppercase">Date</strong></th>
+                      <th class="border-0 p-3 text-center" scope="col"> <strong class="text-sm text-uppercase">Time</strong></th>
+                      <th class="border-0 p-3 text-center" scope="col"> <strong class="text-sm text-uppercase">Instructor</strong></th>
+                      <th class="border-0 p-3 text-center" scope="col"> <strong class="text-sm text-uppercase">Price</strong></th>
+                      <th class="border-0 p-3 text-center" scope="col"> <strong class="text-sm text-uppercase">Remove</strong></th>
+                    </tr>
+                  </thead>
+                  <tbody class="border-0">
+                    <!-- Cart content -->
+                    <tr v-for="(lesson, index) in cart">
+                      
+                      <td class="p-3 text-center border-light">
+                        <p class="mb-0 small">[[lesson.date]]</p>
+                      </td>
+                      <td class="p-3 text-center border-light">
+                        <p class="mb-0 small">[[lesson.time]]</p>
+                      </td>
+                      <td class="p-3 text-center border-light">
+                        <p class="mb-0 small">[[lesson.instructor_name]]</p>
+                      </td>
+                      <td class="p-3 text-center border-light">
+                        <p class="mb-0 small">$[[lesson.price.toFixed(2)]]</p>
+                      </td>
+                      <td class="p-3 text-center border-light">
+                        <a class="reset-anchor" href="#!" data-bs-toggle="modal" data-bs-target="#confirm-dialog" @click="getDatatoModal(index)">
+                          <i class="fas fa-trash-alt small text-muted"></i>
+                        </a>
+                      </td>
+                     
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- CART NAV-->
+              <div class="bg-light px-4 py-3">
+                <div class="row align-items-center text-center">
+                  <div class="col-md-6 mb-3 mb-md-0 text-md-start"><a class="btn btn-link p-0 text-dark btn-sm" href="/list"><i class="fas fa-long-arrow-alt-left me-2"> </i>Continue shopping</a></div>
+                  <div class="col-md-6 text-md-end" v-if="cart.length > 0"><a class="btn btn-outline-dark btn-sm" href="/checkout">Procceed to checkout<i class="fas fa-long-arrow-alt-right ms-2"></i></a></div>
+                  <!-- <div class="col-md-6 text-md-end"><a class="btn btn-outline-dark btn-sm" href="/checkout">Procceed to checkout<i class="fas fa-long-arrow-alt-right ms-2"></i></a></div> -->
+                </div>
+              </div>
+            </div>
+            <!-- ORDER TOTAL-->
+            <div class="col-lg-4">
+              <div class="card border-0 rounded-0 p-lg-4 bg-light">
+                <div class="card-body">
+                  <h5 class="text-uppercase mb-4">Cart total</h5>
+                  <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-center justify-content-between"><strong class="text-uppercase small font-weight-bold">Subtotal</strong><span class="text-muted small">$[[sub_total.toFixed(2)]]</span></li>
+                    <li class="d-flex align-items-center justify-content-between" v-for="instructor of all_discounts"><strong class="text-uppercase small font-weight-bold">Discount ([[instructor]])</strong><span class="text-muted small">$[[get_discount(instructor).toFixed(2)]]</span></li>
+                    <li class="border-bottom my-2"></li>
+                    <li class="d-flex align-items-center justify-content-between mb-4"><strong class="text-uppercase small font-weight-bold">Total</strong><span>$[[total]]</span></li>
+                  </ul>
+                </div>
+              </div>
+              <br>
+              <div class="card border-4 rounded-0 p-lg-4 box-shadow">
+                <div class="card-body">
+                    Buy at least 2 lessons from the same instructor to get 5% off that instructor!
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- JavaScript files-->
+    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/cart.js"></script>
+    
+    <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  </body>
+</html>
